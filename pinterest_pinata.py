@@ -62,6 +62,34 @@ class PinterestPinata(object):
 
         return boards
 
+    def follow_board(self, board_id, board_url):
+        if not board_id or not board_url:
+            raise PinterestPinataException('Illegal arguments board_id={board_id}, board_url={board_url}'.format(
+                board_id=board_id, board_url=board_url))
+
+        self.login_if_needed()
+
+        data = urllib.urlencode({
+            'source_url': board_url,
+            'data': json.dumps({'options': {'board_id': board_id}}),
+            'module_path': 'App()>BoardPage(resource=BoardResource())>'
+                           'BoardHeader(resource=BoardResource())>BoardInfoBar(resource=BoardResource())>'
+                           'BoardFollowButton(followed=false, class_name=boardFollowUnfollowButton, '
+                           'unfollow_text=Unfollow Board, memo=[object Object], follow_ga_category=board_follow, '
+                           'unfollow_ga_category=board_unfollow, disabled=false, color=primary, '
+                           'text=Follow Board, follow_text=Follow Board, follow_class=primary)'
+        })
+
+        res, header, query = self._request('http://www.pinterest.com/resource/BoardFollowResource/create/',
+                                           data,
+                                           referrer=board_url,
+                                           ajax=True)
+
+        if 'BoardFollowResource' in res:
+            return True
+
+        return False
+
     def like(self, pin_id=None):
         if not pin_id:
             raise PinterestPinataException('Illegal arguments pin_id={pin_id}'.format(pin_id=pin_id))
