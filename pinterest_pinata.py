@@ -47,6 +47,9 @@ class PinterestPinata(object):
             self.logged_in = True
 
     def boards(self, username):
+        if not username:
+            raise PinterestPinataException('Illegal arguments username={username}'.format(username=username))
+
         res = self._request('http://www.pinterest.com/' + username + '/')
 
         boards = []
@@ -55,9 +58,69 @@ class PinterestPinata(object):
 
         return boards
 
+    def like(self, pin_id=None):
+        if not pin_id:
+            raise PinterestPinataException('Illegal arguments pin_id={pin_id}'.format(pin_id=pin_id))
+
+        if not self.logged_in:
+            self.login()
+
+        url = 'http://www.pinterest.com/pin/' + pin_id
+
+        data = urllib.urlencode({
+            'source_url': url,
+            'data': json.dumps({'options': {'pin_id': pin_id}}),
+            'module_path': 'module_path App()>Closeup(resource=PinResource(fetch_visual_search_objects=true, '
+                           'id={pin_id}))>PinActionBar(resource=PinResource(fetch_visual_search_objects=true, '
+                           'id={pin_id}))>PinLikeButton(class_name=like leftRounded pinActionBarButton, '
+                           'liked=false, size=medium, has_icon=true, pin_id={pin_id}, text=Like)'.format(pin_id=pin_id)
+        })
+
+        res, header, query = self._request('http://www.pinterest.com/resource/PinLikeResource2/create/',
+                                           data,
+                                           referrer=url,
+                                           ajax=True)
+
+        if 'PinLikeResource2' in res:
+            return True
+
+        return False
+
+    def comment(self, pin_id=None, comment=None):
+        if not pin_id:
+            raise PinterestPinataException('Illegal arguments pin_id={pin_id}, comment={comment}'.format(pin_id=pin_id,
+                                                                                                         comment=comment))
+
+        if not self.logged_in:
+            self.login()
+
+        url = 'http://www.pinterest.com/pin/' + pin_id
+
+        data = urllib.urlencode({
+            'source_url': url,
+            'data': json.dumps({'options': {'pin_id': pin_id,
+                                            'text': comment}}),
+            'module_path': 'module_path App()>Closeup(resource=PinResource(fetch_visual_search_objects=true, id={pin_id}))>'
+                           'CloseupContent(resource=PinResource(id={pin_id}))>'
+                           'Pin(resource=PinResource(id={pin_id}))>'
+                           'PinCommentList(count=0, view_type=detailed, pin_id=199706564701316744, '
+                           'max_num_to_show=50, show_actions=true, image_size=medium, '
+                           'resource=PinCommentListResource(pin_id={pin_id}, page_size=50))'.format(pin_id=pin_id)
+        })
+
+        res, header, query = self._request('http://www.pinterest.com/resource/PinCommentResource/create/',
+                                           data,
+                                           referrer=url,
+                                           ajax=True)
+
+        if 'PinCommentResource' in res:
+            return True
+
+        return False
+
     def pin(self, board_id=None, description=None, image_url=None, link=None):
         if not board_id or not description or not image_url or not link:
-            raise PinterestPinataException('Illegal link board_id={board_id}, description={description}, image_url={image_url}, '
+            raise PinterestPinataException('Illegal arguments board_id={board_id}, description={description}, image_url={image_url}, '
                                            'link={description}'.format(
                 board_id=board_id, description=description, image_url=image_url, link=link))
 
@@ -183,6 +246,6 @@ if __name__ == "__main__":
     import traceback
     try:
         pinata = PinterestPinata(email=sys.argv[1], password=sys.argv[2], username=sys.argv[3])
-        print pinata.boards(sys.argv[3])
+        # print pinata.boards(sys.argv[3])
     except PinterestPinataException:
         print traceback.format_exc()
