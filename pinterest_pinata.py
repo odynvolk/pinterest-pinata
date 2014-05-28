@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
+import re
 import urllib
 import urllib2
 import cookielib
@@ -12,13 +13,14 @@ import json
 
 class PinterestPinata(object):
 
-    def __init__(self, email=None, password=None):
+    def __init__(self, email=None, password=None, username=None):
         if not email or not password:
-            raise PinterestPinataException('Illegal arguments email={email}, password={password}'.format(
-                email=email, password=password))
+            raise PinterestPinataException('Illegal arguments email={email}, password={password}, username={username}'.format(
+                email=email, password=password, username=username))
 
         self.email = email
         self.password = password
+        self.username = username
         self.logged_in = False
         self.csrf_token = None
         self.cookie_jar = cookielib.CookieJar()
@@ -43,6 +45,15 @@ class PinterestPinata(object):
 
         if self.email in res:
             self.logged_in = True
+
+    def boards(self, username):
+        res = self._request('http://www.pinterest.com/' + username + '/')
+
+        boards = []
+        for x in re.findall(r'<a.*class="boardLinkWrapper".*', res[0]):
+            boards.append('http://www.pinterest.com' + re.findall(r'"/.*/"', x)[0].replace('"', ''))
+
+        return boards
 
     def pin(self, board_id=None, description=None, image_url=None, link=None):
         if not board_id or not description or not image_url or not link:
@@ -71,8 +82,8 @@ class PinterestPinata(object):
                                            ajax=True)
 
         if 'PinResource' in res:
-            json_result = json.loads(res)
-            return json_result['resource_response']['data']['id']
+            json_res = json.loads(res)
+            return json_res['resource_response']['data']['id']
 
         return -1
 
@@ -106,11 +117,10 @@ class PinterestPinata(object):
                                            ajax=True)
 
         if 'RepinResource' in res:
-            json_result = json.loads(res)
-            return json_result['resource_response']['data']['id']
+            json_res = json.loads(res)
+            return json_res['resource_response']['data']['id']
 
         return -1
-
 
     def _add_headers(self, opener, referrer='http://google.com/', ajax=False):
         opener.addheaders = [
@@ -142,8 +152,9 @@ class PinterestPinata(object):
             req = urllib2.Request(url, data)
             res = opener.open(req, timeout=10)
             html = res.read()
-        except Exception:
+        except Exception as e:
             sys.exc_clear()
+            print "Something went terribly wrong {e}".format(e=e)
             return False, {}, {}
 
         headers = res.info()
@@ -171,6 +182,7 @@ class PinterestPinataException(Exception):
 if __name__ == "__main__":
     import traceback
     try:
-        pinata = PinterestPinata(email=sys.argv[1], password=sys.argv[2])
+        pinata = PinterestPinata(email=sys.argv[1], password=sys.argv[2], username=sys.argv[3])
+        print pinata.boards(sys.argv[3])
     except PinterestPinataException:
         print traceback.format_exc()
