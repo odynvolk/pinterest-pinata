@@ -6,7 +6,6 @@ import cookielib
 import cStringIO
 import gzip
 import sys
-import json
 import pdb
 import json
 
@@ -22,7 +21,9 @@ class PinterestPinata(object):
         self.password = password
         self.logged_in = False
         self.csrf_token = None
-        self.cookie_jar = None
+        self.cookie_jar = cookielib.CookieJar()
+        self.cookie_handler = urllib2.HTTPCookieProcessor(self.cookie_jar)
+        urllib2.HTTPRedirectHandler.max_redirections = 2
 
     def login(self):
         login_url = 'https://pinterest.com/login/'
@@ -30,9 +31,8 @@ class PinterestPinata(object):
 
         data = urllib.urlencode({
             'source_url': '/login/',
-            'data': json.dumps({"options": {"username_or_email": self.email,
-                                            "password": self.password}
-            }),
+            'data': json.dumps({'options': {'username_or_email': self.email,
+                                            'password': self.password}}),
             'module_path': 'App()>LoginPage()>Login()>Button(class_name=primary, text=Log in, type=submit, size=large)'
         })
 
@@ -44,10 +44,43 @@ class PinterestPinata(object):
         if self.email in res:
             self.logged_in = True
 
-    def repin(self, board_id=None, pin_id=None):
-        if not board_id or not pin_id:
-            raise PinterestPinataException('Illegal arguments board_id={board_id}, pin_id={pin_id}'.format(
-                board_id=board_id, pin_id=pin_id))
+    def pin(self, board_id=None, description=None, image_url=None, link=None):
+        if not board_id or not description or not image_url or not link:
+            raise PinterestPinataException('Illegal link board_id={board_id}, description={description}, image_url={image_url}, '
+                                           'link={description}'.format(
+                board_id=board_id, description=description, image_url=image_url, link=link))
+
+        if not self.logged_in:
+            self.login()
+
+        url = 'http://pinterest.com/pin/create/bookmarklet/'
+
+        data = urllib.urlencode({
+            'source_url': url,
+            'data': json.dumps({'options': {'board_id': board_id,
+                                            'description': description,
+                                            'link': link,
+                                            'image_url': image_url}}),
+            'module_path': 'App()>PinBookmarklet()>PinCreate()>PinForm()>'
+                           'Button(class_name=repinSmall pinIt, text=Pin it, disabled=false, has_icon=true, show_text=false, type=submit, color=primary)'
+        })
+
+        res, header, query = self._request('http://www.pinterest.com/resource/PinResource/create/',
+                                           data,
+                                           referrer=url,
+                                           ajax=True)
+
+        if 'PinResource' in res:
+            json_result = json.loads(res)
+            return json_result['resource_response']['data']['id']
+
+        return -1
+
+    def repin(self, board_id=None, pin_id=None, link=None, description=None):
+        if not board_id or not pin_id or not link or not description:
+            raise PinterestPinataException('Illegal arguments board_id={board_id}, pin_id={pin_id}, link={link}, '
+                                           'description={description}'.format(
+                board_id=board_id, pin_id=pin_id, link=link, description=description))
 
         if not self.logged_in:
             self.login()
@@ -56,8 +89,15 @@ class PinterestPinata(object):
 
         data = urllib.urlencode({
             'source_url': url,
-            'data': '{"options":{"board_id":"391179986322646823","description":"Doldisarna som kan ta sig till Bryssel - DN.SE","link":"http://www.dn.se/valet-2014/doldisarna-som-kan-ta-sig-till-bryssel/","is_video":false,"pin_id":"512566001313223479"},"context":{}}',
-            'module_path': 'App()>Closeup(resource=PinResource(fetch_visual_search_objects=true, id=512566001313223479))>PinActionBar(resource=PinResource(id=512566001313223479))>ShowModalButton(module=PinCreate)#Modal(module=PinCreate(resource=PinResource(id=512566001313223479)))'
+            'data': json.dumps({'options': {'board_id': board_id,
+                                            'pin_id': pin_id,
+                                            'link': link,
+                                            'description': description,
+                                            }
+            }),
+            'module_path': 'App()>Closeup(resource=PinResource(fetch_visual_search_objects=true, id={pin_id}))>'
+                           'PinActionBar(resource=PinResource(id={pin_id}))>ShowModalButton(module=PinCreate)'
+                           '#Modal(module=PinCreate(resource=PinResource(id={pin_id})))'.format(pin_id=pin_id)
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/RepinResource/create/',
@@ -65,19 +105,14 @@ class PinterestPinata(object):
                                            referrer=url,
                                            ajax=True)
 
-    def _request(self, url, data=None, referrer='http://google.com/', ajax=False):
-        handlers = []
+        if 'RepinResource' in res:
+            json_result = json.loads(res)
+            return json_result['resource_response']['data']['id']
 
-        urllib2.HTTPRedirectHandler.max_redirections = 2
+        return -1
 
-        if not self.cookie_jar:
-            self.cookie_jar = cookielib.CookieJar()
 
-        cookie_handler = urllib2.HTTPCookieProcessor(self.cookie_jar)
-        handlers.append(cookie_handler)
-
-        opener = urllib2.build_opener(*handlers)
-
+    def _add_headers(self, opener, referrer='http://google.com/', ajax=False):
         opener.addheaders = [
             ('User-Agent', 'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.1 \
                       (KHTML, like Gecko) Chrome/21.0.1180.89 Safari/537.1'),
@@ -89,41 +124,41 @@ class PinterestPinata(object):
             ('Host', 'www.pinterest.com'),
             ('Origin', 'http://www.pinterest.com'),
             ('Connection', 'keep-alive'),
-            ('Referer', referrer),
             ('X-NEW-APP', 1)
         ]
+        opener.addheaders.append(('Referer', referrer))
         if ajax:
             opener.addheaders.append(('X-Requested-With', 'XMLHttpRequest'))
         if self.csrf_token:
             opener.addheaders.append(('X-CSRFToken', self.csrf_token))
-        error_happen = False
+
+    def _request(self, url, data=None, referrer='http://google.com/', ajax=False):
+        handlers = [self.cookie_handler]
+        opener = urllib2.build_opener(*handlers)
+        self._add_headers(opener, referrer, ajax)
+
         html = ''
         try:
             req = urllib2.Request(url, data)
-            r = opener.open(req, timeout=10)
-            html = r.read()
-        except Exception, e:
+            res = opener.open(req, timeout=10)
+            html = res.read()
+        except Exception:
             sys.exc_clear()
-            error_happen = e
+            return False, {}, {}
 
-        if error_happen:
-            return error_happen, {}, {}
-
-        headers = r.info()
-        # If we get gzipped data the unzip it
-        if ('Content-Encoding' in headers.keys() and headers['Content-Encoding']=='gzip') or \
-                ('content-encoding' in headers.keys() and headers['content-encoding']=='gzip'):
+        headers = res.info()
+        if ('Content-Encoding' in headers.keys() and headers['Content-Encoding'] == 'gzip') or \
+                ('content-encoding' in headers.keys() and headers['content-encoding'] == 'gzip'):
             data = cStringIO.StringIO(html)
             gzipper = gzip.GzipFile(fileobj=data)
-            # Some servers may return gzip header, but not zip data.
             try:
                 html_unzipped = gzipper.read()
-            except:
+            except Exception:
                 sys.exc_clear()
             else:
                 html = html_unzipped
 
-        cookies = {cookie.name:cookie.value for cookie in self.cookie_jar}
+        cookies = {cookie.name: cookie.value for cookie in self.cookie_jar}
         self.csrf_token = cookies['csrftoken']
 
         return html, headers, cookies
@@ -137,8 +172,5 @@ if __name__ == "__main__":
     import traceback
     try:
         pinata = PinterestPinata(email=sys.argv[1], password=sys.argv[2])
-        pinata.repin(board_id='391179986322646823', pin_id='512566001313223479')
     except PinterestPinataException:
         print traceback.format_exc()
-    finally:
-        pass
