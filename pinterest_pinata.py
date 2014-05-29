@@ -119,12 +119,11 @@ class PinterestPinata(object):
             'source_url': url,
             'data': json.dumps({'options': {'pin_id': pin_id,
                                             'text': comment}}),
-            'module_path': 'module_path App()>Closeup(resource=PinResource(fetch_visual_search_objects=true, id={pin_id}))>'
+            'module_path': 'App()>Closeup(resource=PinResource(fetch_visual_search_objects=true, id={pin_id}))>'
                            'CloseupContent(resource=PinResource(id={pin_id}))>'
                            'Pin(resource=PinResource(id={pin_id}))>'
                            'PinCommentList(count=0, view_type=detailed, pin_id={pin_id}, '
-                           'max_num_to_show=50, show_actions=true, image_size=medium, '
-                           'resource=PinCommentListResource(pin_id={pin_id}, page_size=50))'.format(pin_id=pin_id)
+                           'resource=PinCommentListResource(pin_id={pin_id}))'.format(pin_id=pin_id)
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/PinCommentResource/create/',

@@ -5,4 +5,4 @@ consist of somewhat clumsy code.
 
 Supports the following operations: login, pin, repin, boards, like, comment, search, follow_board
 
-python pinterest_pinata.py youremail yourpassword
+python pinterest_pinata.py youremail yourpassword yourusername
