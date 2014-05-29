@@ -38,8 +38,7 @@ class PinterestPinata(object):
         data = urllib.urlencode({
             'source_url': '/login/',
             'data': json.dumps({'options': {'username_or_email': self.email,
-                                            'password': self.password}}),
-            'module_path': 'App()>LoginPage()>Login()>Button(class_name=primary, text=Log in, type=submit, size=large)'
+                                            'password': self.password}})
         })
 
         res, headers, cookies = self._request('http://www.pinterest.com/resource/UserSessionResource/create/',
@@ -71,13 +70,7 @@ class PinterestPinata(object):
 
         data = urllib.urlencode({
             'source_url': board_url,
-            'data': json.dumps({'options': {'board_id': board_id}}),
-            'module_path': 'App()>BoardPage(resource=BoardResource())>'
-                           'BoardHeader(resource=BoardResource())>BoardInfoBar(resource=BoardResource())>'
-                           'BoardFollowButton(followed=false, class_name=boardFollowUnfollowButton, '
-                           'unfollow_text=Unfollow Board, memo=[object Object], follow_ga_category=board_follow, '
-                           'unfollow_ga_category=board_unfollow, disabled=false, color=primary, '
-                           'text=Follow Board, follow_text=Follow Board, follow_class=primary)'
+            'data': json.dumps({'options': {'board_id': board_id}})
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/BoardFollowResource/create/',
@@ -100,11 +93,7 @@ class PinterestPinata(object):
 
         data = urllib.urlencode({
             'source_url': url,
-            'data': json.dumps({'options': {'pin_id': pin_id}}),
-            'module_path': 'module_path App()>Closeup(resource=PinResource(fetch_visual_search_objects=true, '
-                           'id={pin_id}))>PinActionBar(resource=PinResource(fetch_visual_search_objects=true, '
-                           'id={pin_id}))>PinLikeButton(class_name=like leftRounded pinActionBarButton, '
-                           'liked=false, size=medium, has_icon=true, pin_id={pin_id}, text=Like)'.format(pin_id=pin_id)
+            'data': json.dumps({'options': {'pin_id': pin_id}})
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/PinLikeResource2/create/',
@@ -118,7 +107,7 @@ class PinterestPinata(object):
         return False
 
     def comment(self, pin_id=None, comment=None):
-        if not pin_id:
+        if not pin_id or not comment:
             raise PinterestPinataException('Illegal arguments pin_id={pin_id}, comment={comment}'.format(pin_id=pin_id,
                                                                                                          comment=comment))
 
@@ -163,9 +152,7 @@ class PinterestPinata(object):
             'data': json.dumps({'options': {'board_id': board_id,
                                             'description': description,
                                             'link': link,
-                                            'image_url': image_url}}),
-            'module_path': 'App()>PinBookmarklet()>PinCreate()>PinForm()>'
-                           'Button(class_name=repinSmall pinIt, text=Pin it, disabled=false, has_icon=true, show_text=false, type=submit, color=primary)'
+                                            'image_url': image_url}})
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/PinResource/create/',
@@ -196,10 +183,7 @@ class PinterestPinata(object):
                                             'link': link,
                                             'description': description,
                                             }
-            }),
-            'module_path': 'App()>Closeup(resource=PinResource(fetch_visual_search_objects=true, id={pin_id}))>'
-                           'PinActionBar(resource=PinResource(id={pin_id}))>ShowModalButton(module=PinCreate)'
-                           '#Modal(module=PinCreate(resource=PinResource(id={pin_id})))'.format(pin_id=pin_id)
+            })
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/RepinResource/create/',
@@ -304,6 +288,5 @@ if __name__ == "__main__":
     try:
         pinata = PinterestPinata(email=sys.argv[1], password=sys.argv[2], username=sys.argv[3])
         # print pinata.boards(sys.argv[3])
-        # print pinata.search('cats')
     except PinterestPinataException:
         print traceback.format_exc()
