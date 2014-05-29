@@ -61,6 +61,37 @@ class PinterestPinata(object):
 
         return boards
 
+    def create_board(self, name, category, description, privacy='public', layout='default'):
+        if not name or not category or not description:
+            raise PinterestPinataException('Illegal arguments name={name}, category={category}, '
+                                           'description={description}, privacy={privacy}, layout={layout}'.format(
+                name=name, category=category, description=description, privacy=privacy, layout=layout))
+
+        self.login_if_needed()
+
+        url = 'http://www.pinterest.com/' + self.username + '/'
+
+        data = urllib.urlencode({
+            'source_url': url,
+            'data': json.dumps({'options': {'name': name,
+                                            'category': category,
+                                            'description': description,
+                                            'privacy': privacy,
+                                            'layout': layout}})
+        })
+
+        res, header, query = self._request('http://www.pinterest.com/resource/BoardResource/create/',
+                                           data,
+                                           referrer=url,
+                                           ajax=True)
+
+        if 'BoardResource' in res:
+            json_res = json.loads(res)
+            return {'id': json_res['resource_response']['data']['id'],
+                    'url': json_res['resource_response']['data']['url']}
+
+        return False
+
     def follow_board(self, board_id, board_url):
         if not board_id or not board_url:
             raise PinterestPinataException('Illegal arguments board_id={board_id}, board_url={board_url}'.format(
@@ -287,5 +318,6 @@ if __name__ == "__main__":
     try:
         pinata = PinterestPinata(email=sys.argv[1], password=sys.argv[2], username=sys.argv[3])
         # print pinata.boards(sys.argv[3])
+        print pinata.create_board(name='my test board', category='food_drink', description='description later')
     except PinterestPinataException:
         print traceback.format_exc()
