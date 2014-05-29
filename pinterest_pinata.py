@@ -15,7 +15,7 @@ import time
 class PinterestPinata(object):
 
     def __init__(self, email=None, password=None, username=None):
-        if not email or not password:
+        if not email or not password or not username:
             raise PinterestPinataException('Illegal arguments email={email}, password={password}, username={username}'.format(
                 email=email, password=password, username=username))
 
@@ -110,6 +110,29 @@ class PinterestPinata(object):
                                            ajax=True)
 
         if 'BoardFollowResource' in res:
+            return True
+
+        return False
+
+    def follow_user(self, user_id):
+        if not user_id:
+            raise PinterestPinataException('Illegal arguments user_id={user_id}'.format(user_id=user_id))
+
+        self.login_if_needed()
+
+        url = 'http://www.pinterest.com/' + self.username + '/'
+
+        data = urllib.urlencode({
+            'source_url': url,
+            'data': json.dumps({'options': {'user_id': user_id}})
+        })
+
+        res, header, query = self._request('http://www.pinterest.com/resource/UserFollowResource/create/',
+                                           data,
+                                           referrer=url,
+                                           ajax=True)
+
+        if 'UserFollowResource' in res:
             return True
 
         return False
