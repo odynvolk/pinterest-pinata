@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(name="pinterest-pinata",
-      version="0.4.0",
+      version="1.0.0",
       description="Pinterest client",
       install_requires=["requests==0.13.9"],
       author="Alexi Rahman",
