@@ -4,7 +4,7 @@ A Python client for Pinterest. There's at this point in time no API for Pinteres
 consist of somewhat clumsy code.
 
 Supports the following operations: login, pin, repin, boards, like, comment, search_pins, follow board, create board, 
-follow user, search users.
+follow user, search users, search boards.
 
 # INSTALL
 

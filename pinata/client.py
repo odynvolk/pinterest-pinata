@@ -14,7 +14,7 @@ import time
 
 class PinterestPinata(object):
 
-    def __init__(self, email=None, password=None, username=None):
+    def __init__(self, email=None, password=None, username=None, proxies=None):
         if not email or not password or not username:
             raise PinterestPinataException('Illegal arguments email={email}, password={password}, username={username}'.format(
                 email=email, password=password, username=username))
@@ -27,6 +27,14 @@ class PinterestPinata(object):
         self.cookie_jar = cookielib.CookieJar()
         self.cookie_handler = urllib2.HTTPCookieProcessor(self.cookie_jar)
         urllib2.HTTPRedirectHandler.max_redirections = 2
+
+        if proxies:
+            self.proxy = urllib2.ProxyHandler({
+                'http': proxies['http'],
+                'https': proxies['https']
+            })
+        else:
+            self.proxy = None
 
     def login_if_needed(self):
         if self.logged_in:
@@ -42,9 +50,7 @@ class PinterestPinata(object):
         })
 
         res, headers, cookies = self._request('http://www.pinterest.com/resource/UserSessionResource/create/',
-                                              data=data,
-                                              referrer=login_url,
-                                              ajax=True)
+                                              data=data, referrer=login_url, ajax=True)
 
         if self.email in res:
             self.logged_in = True
@@ -81,9 +87,7 @@ class PinterestPinata(object):
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/BoardResource/create/',
-                                           data,
-                                           referrer=url,
-                                           ajax=True)
+                                           data, referrer=url, ajax=True)
 
         if 'BoardResource' in res:
             json_res = json.loads(res)
@@ -105,9 +109,7 @@ class PinterestPinata(object):
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/BoardFollowResource/create/',
-                                           data,
-                                           referrer=board_url,
-                                           ajax=True)
+                                           data, referrer=board_url, ajax=True)
 
         if 'BoardFollowResource' in res:
             return True
@@ -128,9 +130,7 @@ class PinterestPinata(object):
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/UserFollowResource/create/',
-                                           data,
-                                           referrer=url,
-                                           ajax=True)
+                                           data, referrer=url, ajax=True)
 
         if 'UserFollowResource' in res:
             return True
@@ -138,6 +138,10 @@ class PinterestPinata(object):
         return False
 
     def like(self, pin_id=None):
+        """
+        :param pin_id:
+        :return: bool
+        """
         if not pin_id:
             raise PinterestPinataException('Illegal arguments pin_id={pin_id}'.format(pin_id=pin_id))
 
@@ -151,9 +155,7 @@ class PinterestPinata(object):
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/PinLikeResource2/create/',
-                                           data,
-                                           referrer=url,
-                                           ajax=True)
+                                           data, referrer=url, ajax=True)
 
         if 'PinLikeResource2' in res:
             return True
@@ -181,9 +183,7 @@ class PinterestPinata(object):
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/PinCommentResource/create/',
-                                           data,
-                                           referrer=url,
-                                           ajax=True)
+                                           data, referrer=url, ajax=True)
 
         if 'PinCommentResource' in res:
             return True
@@ -191,10 +191,14 @@ class PinterestPinata(object):
         return False
 
     def pin(self, board_id=None, description=None, image_url=None, link=None):
+        """
+        :param query:
+        :return: 983242
+        """
         if not board_id or not description or not image_url or not link:
             raise PinterestPinataException('Illegal arguments board_id={board_id}, description={description}, image_url={image_url}, '
-                                           'link={description}'.format(
-                board_id=board_id, description=description, image_url=image_url, link=link))
+                                           'link={description}'.format(board_id=board_id, description=description,
+                                                                       image_url=image_url, link=link))
 
         self.login_if_needed()
 
@@ -209,9 +213,7 @@ class PinterestPinata(object):
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/PinResource/create/',
-                                           data,
-                                           referrer=url,
-                                           ajax=True)
+                                           data, referrer=url, ajax=True)
 
         if 'PinResource' in res:
             json_res = json.loads(res)
@@ -220,10 +222,14 @@ class PinterestPinata(object):
         return -1
 
     def repin(self, board_id=None, pin_id=None, link=None, description=None):
+        """
+        :param query:
+        :return: 983242
+        """
         if not board_id or not pin_id or not link or not description:
             raise PinterestPinataException('Illegal arguments board_id={board_id}, pin_id={pin_id}, link={link}, '
-                                           'description={description}'.format(
-                board_id=board_id, pin_id=pin_id, link=link, description=description))
+                                           'description={description}'.format(board_id=board_id, pin_id=pin_id,
+                                                                              link=link, description=description))
 
         self.login_if_needed()
 
@@ -240,9 +246,7 @@ class PinterestPinata(object):
         })
 
         res, header, query = self._request('http://www.pinterest.com/resource/RepinResource/create/',
-                                           data=data,
-                                           referrer=url,
-                                           ajax=True)
+                                           data=data, referrer=url, ajax=True)
 
         if 'RepinResource' in res:
             json_res = json.loads(res)
@@ -250,7 +254,32 @@ class PinterestPinata(object):
 
         return -1
 
+    def search_boards(self, query):
+        """
+        :param query:
+        :return: [{u'layout': u'xxxx', u'name': u'xxxx', u'privacy': u'xxxx', u'url': u'xxxx', u'owner': {u'id': u'xxxx'}, u'type': u'xxxx', u'id': u'xxxx', u'image_thumbnail_url': u'http://xxxx.jpg'}]
+        """
+        if not query:
+            raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
+        query = urllib.quote(query)
+
+        res, headers, cookies = self._request(url='http://www.pinterest.com/resource/SearchResource/get/?source_url=%2Fsearch%2Fpins%2F%3Fq%3Dart%26rs%3Dac%26len%3D1&data=%7B%22options%22%3A%7B%22show_scope_selector%22%3Anull%2C%22scope%22%3A%22pins%22%2C%22constraint_string%22%3Anull%2C%22bookmarks%22%3A%5B%22%22%5D%2C%22query%22%3A%22'+query+'%22%7D%2C%22context%22%3A%7B%22app_version%22%3A%22da919e8%22%2C%22https_exp%22%3Afalse%7D%2C%22module%22%3A%7B%22name%22%3A%22GridItems%22%2C%22options%22%3A%7B%22scrollable%22%3Atrue%2C%22show_grid_footer%22%3Atrue%2C%22centered%22%3Atrue%2C%22reflow_all%22%3Atrue%2C%22virtualize%22%3Atrue%2C%22item_options%22%3A%7B%22show_pinner%22%3Atrue%2C%22show_pinned_from%22%3Afalse%2C%22show_board%22%3Atrue%7D%2C%22layout%22%3A%22variable_height%22%2C%22track_item_impressions%22%3Atrue%7D%7D%2C%22append%22%3Atrue%2C%22error_strategy%22%3A1%7D&module_path=App()%3EHeader()%3Eui.SearchForm()%3Eui.TypeaheadField(enable_recent_queries%3Dtrue%2C+name%3Dq%2C+view_type%3Dsearch%2C+class_name%3DinHeader%2C+prefetch_on_focus%3Dtrue%2C+value%3D%22%22%2C+populate_on_result_highlight%3Dtrue%2C+search_delay%3D0%2C+search_on_focus%3Dtrue%2C+placeholder%3DSearch%2C+tags%3Dautocomplete)&_='+str(int(time.time())*10*10*10),
+                                              referrer='https://www.pinterest.com/search/boards/?q=' + query,
+                                              ajax=True)
+
+        data = json.loads(res)
+        children = data['module']['tree']['children']
+        res = []
+        for child in children:
+            res.append(child['data']['board'])
+
+        return res
+
     def search_pins(self, query):
+        """
+        :param query:
+        :return: [{u'id': u'xxxxxxx', u'img': u'xxxxxxx', u'link': u'xxxxxxx', u'desc': u'xxxxxxx'}]
+        """
         if not query:
             raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
         query = urllib.quote(query)
@@ -278,6 +307,10 @@ class PinterestPinata(object):
         return res
 
     def search_users(self, query):
+        """
+        :param query:
+        :return: [{u'username': u'xxxxxxx', u'image_small_url': u'xxxxxxx', u'type': u'xxxxxxx', u'id': u'xxxxxxx', u'full_name': u'xxxxxxx'}]
+        """
         if not query:
             raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
         query = urllib.quote(query)
@@ -317,13 +350,15 @@ class PinterestPinata(object):
 
     def _request(self, url, data=None, referrer='http://google.com/', ajax=False):
         handlers = [self.cookie_handler]
+        if self.proxy:
+            handlers.append(self.proxy)
         opener = urllib2.build_opener(*handlers)
         self._add_headers(opener, referrer, ajax)
 
         html = ''
         try:
             req = urllib2.Request(url, data)
-            res = opener.open(req, timeout=10)
+            res = opener.open(req, timeout=30)
             html = res.read()
         except Exception as e:
             sys.exc_clear()
