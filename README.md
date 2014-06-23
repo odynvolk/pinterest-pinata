@@ -14,6 +14,13 @@ If you have downloaded the source code:
 python setup.py install
 ```
 
+Pip
+
+```bash
+pip install pinterest-pinata
+```
+
+
 # USAGE
 
 ## bash
