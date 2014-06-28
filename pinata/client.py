@@ -226,7 +226,7 @@ class PinterestPinata(object):
         :param query:
         :return: 983242
         """
-        if not board_id or not pin_id or not link or not description:
+        if not board_id or not pin_id:
             raise PinterestPinataException('Illegal arguments board_id={board_id}, pin_id={pin_id}, link={link}, '
                                            'description={description}'.format(board_id=board_id, pin_id=pin_id,
                                                                               link=link, description=description))
