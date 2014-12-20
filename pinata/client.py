@@ -263,17 +263,12 @@ class PinterestPinata(object):
             raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
         query = urllib.quote(query)
 
-        res, headers, cookies = self._request(url='http://www.pinterest.com/resource/SearchResource/get/?source_url=%2Fsearch%2Fpins%2F%3Fq%3Dart%26rs%3Dac%26len%3D1&data=%7B%22options%22%3A%7B%22show_scope_selector%22%3Anull%2C%22scope%22%3A%22pins%22%2C%22constraint_string%22%3Anull%2C%22bookmarks%22%3A%5B%22%22%5D%2C%22query%22%3A%22'+query+'%22%7D%2C%22context%22%3A%7B%22app_version%22%3A%22da919e8%22%2C%22https_exp%22%3Afalse%7D%2C%22module%22%3A%7B%22name%22%3A%22GridItems%22%2C%22options%22%3A%7B%22scrollable%22%3Atrue%2C%22show_grid_footer%22%3Atrue%2C%22centered%22%3Atrue%2C%22reflow_all%22%3Atrue%2C%22virtualize%22%3Atrue%2C%22item_options%22%3A%7B%22show_pinner%22%3Atrue%2C%22show_pinned_from%22%3Afalse%2C%22show_board%22%3Atrue%7D%2C%22layout%22%3A%22variable_height%22%2C%22track_item_impressions%22%3Atrue%7D%7D%2C%22append%22%3Atrue%2C%22error_strategy%22%3A1%7D&module_path=App()%3EHeader()%3Eui.SearchForm()%3Eui.TypeaheadField(enable_recent_queries%3Dtrue%2C+name%3Dq%2C+view_type%3Dsearch%2C+class_name%3DinHeader%2C+prefetch_on_focus%3Dtrue%2C+value%3D%22%22%2C+populate_on_result_highlight%3Dtrue%2C+search_delay%3D0%2C+search_on_focus%3Dtrue%2C+placeholder%3DSearch%2C+tags%3Dautocomplete)&_='+str(int(time.time())*10*10*10),
-                                              referrer='https://www.pinterest.com/search/boards/?q=' + query,
+        res, headers, cookies = self._request(url=u'http://www.pinterest.com/resource/SearchResource/get/?source_url=%2Fsearch%2Fpins%2F%3Fq%3Dart%26rs%3Dac%26len%3D1&data=%7B%22options%22%3A%7B%22show_scope_selector%22%3Anull%2C%22scope%22%3A%22pins%22%2C%22constraint_string%22%3Anull%2C%22bookmarks%22%3A%5B%22%22%5D%2C%22query%22%3A%22'+query+'%22%7D%2C%22context%22%3A%7B%22app_version%22%3A%22da919e8%22%2C%22https_exp%22%3Afalse%7D%2C%22module%22%3A%7B%22name%22%3A%22GridItems%22%2C%22options%22%3A%7B%22scrollable%22%3Atrue%2C%22show_grid_footer%22%3Atrue%2C%22centered%22%3Atrue%2C%22reflow_all%22%3Atrue%2C%22virtualize%22%3Atrue%2C%22item_options%22%3A%7B%22show_pinner%22%3Atrue%2C%22show_pinned_from%22%3Afalse%2C%22show_board%22%3Atrue%7D%2C%22layout%22%3A%22variable_height%22%2C%22track_item_impressions%22%3Atrue%7D%7D%2C%22append%22%3Atrue%2C%22error_strategy%22%3A1%7D&module_path=App()%3EHeader()%3Eui.SearchForm()%3Eui.TypeaheadField(enable_recent_queries%3Dtrue%2C+name%3Dq%2C+view_type%3Dsearch%2C+class_name%3DinHeader%2C+prefetch_on_focus%3Dtrue%2C+value%3D%22%22%2C+populate_on_result_highlight%3Dtrue%2C+search_delay%3D0%2C+search_on_focus%3Dtrue%2C+placeholder%3DSearch%2C+tags%3Dautocomplete)&_='+str(int(time.time())*10*10*10),
+                                              referrer=u'https://www.pinterest.com/search/boards/?q=' + query,
                                               ajax=True)
 
         data = json.loads(res)
-        children = data['module']['tree']['children']
-        res = []
-        for child in children:
-            res.append(child['data']['board'])
-
-        return res
+        return [child['data']['board'] for child in data['module']['tree']['children']]
 
     def search_pins(self, query):
         """
@@ -284,25 +279,24 @@ class PinterestPinata(object):
             raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
         query = urllib.quote(query)
 
-        res, headers, cookies = self._request(url='http://www.pinterest.com/resource/SearchResource/get/?source_url=%2Fsearch%2Fpins%2F%3Fq%3Dart%26rs%3Dac%26len%3D1&data=%7B%22options%22%3A%7B%22show_scope_selector%22%3Anull%2C%22scope%22%3A%22pins%22%2C%22constraint_string%22%3Anull%2C%22bookmarks%22%3A%5B%22%22%5D%2C%22query%22%3A%22'+query+'%22%7D%2C%22context%22%3A%7B%22app_version%22%3A%22da919e8%22%2C%22https_exp%22%3Afalse%7D%2C%22module%22%3A%7B%22name%22%3A%22GridItems%22%2C%22options%22%3A%7B%22scrollable%22%3Atrue%2C%22show_grid_footer%22%3Atrue%2C%22centered%22%3Atrue%2C%22reflow_all%22%3Atrue%2C%22virtualize%22%3Atrue%2C%22item_options%22%3A%7B%22show_pinner%22%3Atrue%2C%22show_pinned_from%22%3Afalse%2C%22show_board%22%3Atrue%7D%2C%22layout%22%3A%22variable_height%22%2C%22track_item_impressions%22%3Atrue%7D%7D%2C%22append%22%3Atrue%2C%22error_strategy%22%3A1%7D&module_path=App()%3EHeader()%3Eui.SearchForm()%3Eui.TypeaheadField(enable_recent_queries%3Dtrue%2C+name%3Dq%2C+view_type%3Dsearch%2C+class_name%3DinHeader%2C+prefetch_on_focus%3Dtrue%2C+value%3D%22%22%2C+populate_on_result_highlight%3Dtrue%2C+search_delay%3D0%2C+search_on_focus%3Dtrue%2C+placeholder%3DSearch%2C+tags%3Dautocomplete)&_='+str(int(time.time())*10*10*10),
-                                              referrer='https://www.pinterest.com/search/pins/?q=' + query,
+        res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/pins/?q=' + query + '&rs=rs&%7Crecentsearch%7C0&_='+str(int(time.time())*10*10*10),
+                                              referrer=u'https://www.pinterest.com/search/pins/?q=' + query,
                                               ajax=True)
 
         data = json.loads(res)
         children = data['module']['tree']['children']
         res = []
         for child in children:
-            desc = ''
             for i in child['children']:
-                if i['id'] == 'sendPinButton':
-                    desc = i['options']['module']['options']['object_description']
-                    break
-            res.append({
-                'id': child['options']['pin_id'],
-                'img': child['data']['images']['orig']['url'],
-                'link': child['data']['link'],
-                'desc': desc
-            })
+                for ji in i['children']:
+                    for ki in ji['children']:
+                        if 'children' in ki and len(ki['children']) > 0:
+                            res.append({
+                                'id': ki['children'][1]['options']['pin_id'],
+                                'img': ji['children'][1]['data']['images']['orig']['url'],
+                                'link': ji['children'][1]['data']['link'],
+                                'desc': ji['children'][1]['data']['description']
+                            })
 
         return res
 
@@ -315,18 +309,13 @@ class PinterestPinata(object):
             raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
         query = urllib.quote(query)
 
-        res, headers, cookies = self._request(url='http://www.pinterest.com/resource/SearchResource/get/?source_url=%2Fsearch%2Fpins%2F%3Fq%3Dart%26rs%3Dac%26len%3D1&data=%7B%22options%22%3A%7B%22show_scope_selector%22%3Anull%2C%22scope%22%3A%22pins%22%2C%22constraint_string%22%3Anull%2C%22bookmarks%22%3A%5B%22%22%5D%2C%22query%22%3A%22'+query+'%22%7D%2C%22context%22%3A%7B%22app_version%22%3A%22da919e8%22%2C%22https_exp%22%3Afalse%7D%2C%22module%22%3A%7B%22name%22%3A%22GridItems%22%2C%22options%22%3A%7B%22scrollable%22%3Atrue%2C%22show_grid_footer%22%3Atrue%2C%22centered%22%3Atrue%2C%22reflow_all%22%3Atrue%2C%22virtualize%22%3Atrue%2C%22item_options%22%3A%7B%22show_pinner%22%3Atrue%2C%22show_pinned_from%22%3Afalse%2C%22show_board%22%3Atrue%7D%2C%22layout%22%3A%22variable_height%22%2C%22track_item_impressions%22%3Atrue%7D%7D%2C%22append%22%3Atrue%2C%22error_strategy%22%3A1%7D&module_path=App()%3EHeader()%3Eui.SearchForm()%3Eui.TypeaheadField(enable_recent_queries%3Dtrue%2C+name%3Dq%2C+view_type%3Dsearch%2C+class_name%3DinHeader%2C+prefetch_on_focus%3Dtrue%2C+value%3D%22%22%2C+populate_on_result_highlight%3Dtrue%2C+search_delay%3D0%2C+search_on_focus%3Dtrue%2C+placeholder%3DSearch%2C+tags%3Dautocomplete)&_='+str(int(time.time())*10*10*10),
-                                              referrer='https://www.pinterest.com/search/users/?q=' + query,
+        res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/users/?q=' + query + '&_='+str(int(time.time())*10*10*10),
+                                              referrer=u'https://www.pinterest.com/search/users/?q=' + query,
                                               ajax=True)
 
         data = json.loads(res)
 
-        children = data['module']['tree']['children']
-        res = []
-        for child in children:
-            res.append(child['data']['pinner'])
-
-        return res
+        return [pinner for pinner in data['module']['tree']['children'][2]['data']['results']]
 
     def _add_headers(self, opener, referrer='http://google.com/', ajax=False):
         opener.addheaders = [
@@ -392,6 +381,7 @@ if __name__ == "__main__":
     try:
         pinata = PinterestPinata(email=sys.argv[1], password=sys.argv[2], username=sys.argv[3])
         # print pinata.boards(sys.argv[3])
-        print pinata.create_board(name='my test board', category='food_drink', description='description later')
+        # print pinata.create_board(name='my test board', category='food_drink', description='description later')
+        print pinata.search_boards('cats')
     except PinterestPinataException:
         print traceback.format_exc()
