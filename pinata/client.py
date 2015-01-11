@@ -392,10 +392,10 @@ if __name__ == "__main__":
     import traceback
     try:
         pinata = PinterestPinata(email=sys.argv[1], password=sys.argv[2], username=sys.argv[3])
-        # print pinata.boards(sys.argv[3])
+        print pinata.boards(sys.argv[3])
         # print pinata.create_board(name='my test board', category='food_drink', description='description later')
         # print pinata.search_boards('cats')
-        print pinata.search_pins('soccer7')
-        print pinata.search_pins('hair10')
+        #print pinata.search_pins('soccer7')
+        #print pinata.search_pins('hair10')
     except PinterestPinataException:
         print traceback.format_exc()
