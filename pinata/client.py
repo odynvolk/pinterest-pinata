@@ -56,14 +56,18 @@ class PinterestPinata(object):
             self.logged_in = True
 
     def boards(self, username):
+        """
+        :param username:
+        :return: [{u'id': u'xxxx'}]
+        """
         if not username:
             raise PinterestPinataException('Illegal arguments username={username}'.format(username=username))
 
-        res = self._request('http://www.pinterest.com/' + username + '/')
+        res = self._request('http://www.pinterest.com/' + username + '/', ajax=True)
 
-        boards = []
-        for x in re.findall(r'<a.*class="boardLinkWrapper".*', res[0]):
-            boards.append('http://www.pinterest.com' + re.findall(r'"/.*/"', x)[0].replace('"', ''))
+        boards = [re.findall("\d+", board)[0] for board in re.findall(r'"board_id":\s"\d*"', res[0])]
+        unique = list(set(boards))
+        boards = [{'id': board} for board in unique]
 
         return boards
 
@@ -390,6 +394,8 @@ if __name__ == "__main__":
         pinata = PinterestPinata(email=sys.argv[1], password=sys.argv[2], username=sys.argv[3])
         # print pinata.boards(sys.argv[3])
         # print pinata.create_board(name='my test board', category='food_drink', description='description later')
-        print pinata.search_boards('cats')
+        # print pinata.search_boards('cats')
+        print pinata.search_pins('soccer7')
+        print pinata.search_pins('hair10')
     except PinterestPinataException:
         print traceback.format_exc()
