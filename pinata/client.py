@@ -301,13 +301,13 @@ class PinterestPinata(object):
         for child in children:
             for i in child['children']:
                 for ji in i['children']:
-                    for ki in ji['children']:
+                    for index, ki, in enumerate(ji['children'], start=0):
                         if 'children' in ki and len(ki['children']) > 0:
                             res.append({
                                 'id': ki['children'][1]['options']['pin_id'],
-                                'img': ji['children'][1]['data']['images']['orig']['url'],
-                                'link': ji['children'][1]['data']['link'],
-                                'desc': ji['children'][1]['data']['description']
+                                'img': ji['children'][index]['data']['images']['orig']['url'],
+                                'link': ji['children'][index]['data']['link'],
+                                'desc': ji['children'][index]['data']['description']
                             })
 
         return res
