@@ -1,3 +1,7 @@
+## Version 1.1.4
+
+* Fixed bug in search pins which returned a list with the same pins.
+
 ## Version 1.1.3
 
 * Fixed request that fetched boards.
