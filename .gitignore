@@ -1,0 +1,7 @@
+# Created by .ignore support plugin (hsz.mobi)
+.idea
+*.pyc
+dist/
+pinterest_pinata.egg-info/
+pinterest-pinata.iml
+build

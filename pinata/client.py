@@ -267,7 +267,7 @@ class PinterestPinata(object):
             raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
         query = urllib.quote(query)
 
-        res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/boards/?q=' + query + '&_='+str(int(time.time())*10*10*10),
+        res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/boards/?q=' + query,
                                               referrer=u'https://www.pinterest.com/search/boards/?q=' + query,
                                               ajax=True)
 
@@ -291,7 +291,7 @@ class PinterestPinata(object):
             raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
         query = urllib.quote(query)
 
-        res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/pins/?q=' + query + '&rs=rs&%7Crecentsearch%7C0&_='+str(int(time.time())*10*10*10),
+        res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/pins/?q=' + query + '&rs=rs&%7Crecentsearch%7C0',
                                               referrer=u'https://www.pinterest.com/search/pins/?q=' + query,
                                               ajax=True)
 
@@ -321,7 +321,7 @@ class PinterestPinata(object):
             raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
         query = urllib.quote(query)
 
-        res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/users/?q=' + query + '&_='+str(int(time.time())*10*10*10),
+        res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/users/?q=' + query,
                                               referrer=u'https://www.pinterest.com/search/users/?q=' + query,
                                               ajax=True)
 

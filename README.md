@@ -20,6 +20,11 @@ Pip
 pip install pinterest-pinata
 ```
 
+# TESTS
+
+```bash
+python -m unittest discover tests
+```
 
 # USAGE
 
@@ -40,4 +45,4 @@ pinata.create_board(name='my test board', category='food_drink', description='my
 
 # TODO
 
-More tests and use vcrpy...
+More tests...
