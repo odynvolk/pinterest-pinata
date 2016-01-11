@@ -327,7 +327,16 @@ class PinterestPinata(object):
 
         data = json.loads(res)
 
-        return [pinner for pinner in data['module']['tree']['children'][2]['data']['results']]
+        children = data['module']['tree']['children']
+        res = []
+        for child in children:
+            for i in child['children']:
+                for ji in i['children']:
+                    for index, ki, in enumerate(ji['children'], start=0):
+                        if 'children' in ki and len(ki['children']) > 0:
+                            res.append(ji['children'][index]['data'])
+
+        return res
 
     def _add_headers(self, opener, referrer='http://google.com/', ajax=False):
         opener.addheaders = [

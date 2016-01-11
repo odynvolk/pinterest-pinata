@@ -1,0 +1,133 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept: ['image/png,image/*;q=0.8,*/*;q=0.5']
+      Accept-Charset: ['ISO-8859-1,utf-8;q=0.7,*;q=0.7']
+      Accept-Encoding: ['gzip,deflate']
+      Accept-Language: ['en-us,en;q=0.5']
+      Connection: [close]
+      Host: [!!python/unicode 'www.pinterest.com']
+      Keep-Alive: ['3600']
+      Origin: ['http://www.pinterest.com']
+      Referer: [!!python/unicode 'https://www.pinterest.com/search/users/?q=benadolfsson']
+      User-Agent: ['Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.1                       (KHTML,
+          like Gecko) Chrome/21.0.1180.89 Safari/537.1']
+      X-New-App: [1]
+      X-Requested-With: [XMLHttpRequest]
+    method: GET
+    uri: http://www.pinterest.com/search/users/?q=benadolfsson
+  response:
+    body: {string: !!python/unicode ''}
+    headers:
+      accept-ranges: [bytes]
+      connection: [close, Transfer-Encoding]
+      date: ['Mon, 11 Jan 2016 20:17:27 GMT']
+      location: ['https://www.pinterest.com/search/users/?q=benadolfsson']
+      server: [Varnish]
+      x-pinterest-rid: ['161574896694']
+      x-varnish: ['2250067407']
+    status: {code: 301, message: Moved Permanently}
+- request:
+    body: null
+    headers:
+      Accept: ['image/png,image/*;q=0.8,*/*;q=0.5']
+      Accept-Charset: ['ISO-8859-1,utf-8;q=0.7,*;q=0.7']
+      Accept-Encoding: ['gzip,deflate']
+      Accept-Language: ['en-us,en;q=0.5']
+      Connection: [close]
+      Host: [www.pinterest.com]
+      Keep-Alive: ['3600']
+      Origin: ['http://www.pinterest.com']
+      Referer: [!!python/unicode 'https://www.pinterest.com/search/users/?q=benadolfsson']
+      User-Agent: ['Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.1                       (KHTML,
+          like Gecko) Chrome/21.0.1180.89 Safari/537.1']
+      X-New-App: [1]
+      X-Requested-With: [XMLHttpRequest]
+    method: GET
+    uri: https://www.pinterest.com/search/users/?q=benadolfsson
+  response:
+    body:
+      string: !!binary |
+        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
+        wl2cbUCNitHDw38BAqFnW95HAAA=
+    headers:
+      accept-ranges: [bytes]
+      connection: [close]
+      content-encoding: [gzip]
+      content-length: ['3098']
+      content-type: [application/json; charset=utf-8]
+      date: ['Mon, 11 Jan 2016 20:17:28 GMT']
+      p3p: ['CP="This is not a P3P policy. See https://www.pinterest.com/_/_/help/articles/pinterest-and-p3p
+          for more info."']
+      pinterest-generated-by: [coreapp-webapp-prod-58013737]
+      pinterest-version: [79c2751]
+      server: [nginx]
+      set-cookie: ['_auth=0; Domain=.pinterest.com; expires=Thu, 05-Jan-2017 20:17:28
+          GMT; httponly; Max-Age=31103999; Path=/; secure', 'csrftoken=Tny4rYDEvutknpIrePaZxcKtkHQlEC7E;
+          Domain=.pinterest.com; expires=Mon, 09-Jan-2017 20:17:28 GMT; Max-Age=31449600;
+          Path=/', '_pinterest_sess=TWc9PSZBZXVPb084YTlnUWpCYysySk44c2FMaWVMUU5YVTA2Uy8rTzFCY2duRzlUNXBOeEZEdndlZEFjSHZPUnVHT0hvTGs0REtEcHRDYS9pRHlRK2JwSEJhWGpTcmUreUJXTGlpcU05WldMRVk5NFBqaFpFZFR2WUlReVFFRXdMNUlFVCtPMlRWK2owY01Yb0U2d01zSHhqdWc9PSYxclZMRHovaUV4eFNUMENTZldoOWZsSnRLcHc9;
+          Domain=.pinterest.com; expires=Thu, 05-Jan-2017 20:17:28 GMT; httponly;
+          Max-Age=31103999; Path=/; secure']
+      strict-transport-security: [max-age=31556926;]
+      vary: ['User-Agent, Cookie, Accept-Encoding']
+      x-content-type-options: [nosniff]
+      x-frame-options: [SAMEORIGIN]
+      x-pinterest-rid: ['108345942691']
+      x-varnish: ['3532019718']
+      x-xss-protection: [1; mode=block]
+    status: {code: 200, message: OK}
+version: 1
