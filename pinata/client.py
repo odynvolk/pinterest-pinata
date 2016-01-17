@@ -264,7 +264,7 @@ class PinterestPinata(object):
         :return: [{u'layout': u'xxxx', u'name': u'xxxx', u'privacy': u'xxxx', u'url': u'xxxx', u'owner': {u'id': u'xxxx'}, u'type': u'xxxx', u'id': u'xxxx', u'image_thumbnail_url': u'http://xxxx.jpg'}]
         """
         if not query:
-            raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
+            raise PinterestPinataException('Illegal arguments query={query}'.format(query=query))
         query = urllib.quote(query)
 
         res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/boards/?q=' + query,
@@ -288,7 +288,7 @@ class PinterestPinata(object):
         :return: [{u'id': u'xxxxxxx', u'img': u'xxxxxxx', u'link': u'xxxxxxx', u'desc': u'xxxxxxx'}]
         """
         if not query:
-            raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
+            raise PinterestPinataException('Illegal arguments query={query}'.format(query=query))
         query = urllib.quote(query)
 
         res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/pins/?q=' + query + '&rs=rs&%7Crecentsearch%7C0',
@@ -318,7 +318,7 @@ class PinterestPinata(object):
         :return: [{u'username': u'xxxxxxx', u'image_small_url': u'xxxxxxx', u'type': u'xxxxxxx', u'id': u'xxxxxxx', u'full_name': u'xxxxxxx'}]
         """
         if not query:
-            raise PinterestPinataException('Illegal arguments query={query)'.format(query=query))
+            raise PinterestPinataException('Illegal arguments query={query}'.format(query=query))
         query = urllib.quote(query)
 
         res, headers, cookies = self._request(url=u'http://www.pinterest.com/search/users/?q=' + query,

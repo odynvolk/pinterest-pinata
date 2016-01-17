@@ -1,3 +1,7 @@
+## Version 1.1.5
+
+* Fixed bug in search users which parsed the result wrong.
+
 ## Version 1.1.4
 
 * Fixed bug in search pins which returned a list with the same pins.
